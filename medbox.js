@@ -179,8 +179,6 @@ MedBox.prototype.callbackHandler = function(e) {
         return false;
     }
 
-    let message = '';
-
     if (!e || !e.detail) {
         return;
     }
