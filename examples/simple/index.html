@@ -1,0 +1,31 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medecine Box</title>
+    <script src="../../oubkic/js/medbox.js"></script>
+    <script src="https://chat-develop.one.th/static/javascript/v1/onechat_bluetooth.js"></script>
+</head>
+<body>
+    <center> 
+        <a href="https://chat-api.one.th/go_api/api/v1/openScanQRcodeWithValue" target="_blank">
+            <font size=+3>Scan QR to unlock MedBox</font><br>
+        </a>
+        MedBoxjs lib rev.1
+    </center>
+  <script>
+        let medbox = MedBoxController({
+            oneID : '123456',
+            logEndpoint : "http://your_log_server.com"
+            timeout: 8000
+        });
+        function oneChatCallBackQRScanner(qrcode){
+            medbox.openBoxByQRCode(qrcode.toString(), function (code, text) {
+                alert(`${code} -- ${text}`);
+            });
+        }
+    </script>
+
+    <div id="devicelist" width=300>
+</body>
+</html>
