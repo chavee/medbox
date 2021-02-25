@@ -110,7 +110,7 @@ MedBox.prototype.openBoxByQRCode = function(qrcode, callback){
               OneChat_scanDevice(time_scan);
           }
           catch(error) {
-        			alert('scanDevice ' + error);
+              alert('scanDevice ' + error);
           }
       }
 
@@ -276,6 +276,6 @@ MedBox.prototype.callbackHandler = function(e) {
 
 function MedBoxController(param) {
     let medbox = new MedBox(param);
-    window.addEventListener('oneChatBluetoothCallBackData', medbox.callbackHandler.bind(medbox));
-  	return medbox;
+    //window.addEventListener('oneChatBluetoothCallBackData', medbox.callbackHandler.bind(medbox));
+    return medbox;
 }

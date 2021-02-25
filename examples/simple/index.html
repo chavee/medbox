@@ -25,6 +25,10 @@
             debug_div_id: 'debug_area'
         });
 
+        window.addEventListener('oneChatBluetoothCallBackData',  async(e) => {
+           medbox.callbackHandler.bind(medbox)(e); 
+        });
+
         window.addEventListener('oneChatCallBackQRScanner',  async(e) => {
             let qrcode = e.detail.qrcode;
             medbox.openBoxByQRCode(qrcode.toString(), function (code, text) {
