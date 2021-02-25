@@ -44,22 +44,24 @@ MedBox.prototype.clearWriteJob = function() {
 }
 
 MedBox.prototype.logtoHTML = function(input, header = ''){
-    let out = input;
-    if (typeof(input) == 'object') {
-      try {
-          out =  JSON.stringify(input, undefined, 4);
-      }
-      catch(e) {
-          alert(e);
-      }
-    }
+    if (this.debug) {
+        let out = input;
+        if (typeof(input) == 'object') {
+          try {
+              out =  JSON.stringify(input, undefined, 4);
+          }
+          catch(e) {
+              alert(e);
+          }
+        }
 
-    let debugbox = document.getElementById(this.debug_div_id);
-    if (debugbox) {
-      if (header) {
-          header = ' '+header+' ';
-      }
-      debugbox.innerHTML = out + '<br>---'+ header +'----------<br>' + debugbox.innerHTML;
+        let debugbox = document.getElementById(this.debug_div_id);
+        if (debugbox) {
+          if (header) {
+              header = ' '+header+' ';
+          }
+          debugbox.innerHTML = out + '<br>---'+ header +'----------<br>' + debugbox.innerHTML;
+        }
     }
 }
 
@@ -135,14 +137,6 @@ MedBox.prototype.openBoxByQRCode = function(qrcode, callback){
               that.logtoHTML(info, 'writing BLE');
 
               OneChat_writeCharacteristicByUUID(info.uuid, 'FF00', 'FF01', '0006CC59513C4CAA6116D34BF71000B12EF8', 'hex');
-
-              // webkit.messageHandlers.OneChat_writeCharacteristicByUUID.postMessage({
-              //     device_uuid: info.uuid,
-              //     service_uuid: 'FF00',
-              //     characteristic_uuid: 'FF01',
-              //     data: '0006CC59513C4CAA6116D34BF71000B12EF8',
-              //     data_type : 'hex'
-              // });
 
               that.write_job.callback = function() {
                   if (timer) {
