@@ -197,7 +197,7 @@ MedBox.prototype.callbackHandler = function(e) {
     try {
         if (type == 'return_once_device') {
                 let d = data.data;
-                mhex = d.manufacturer_data_haxa || d.manufacturer_data_hexa;
+                let mhex = d.manufacturer_data_haxa || d.manufacturer_data_hexa;
                 if (mhex) {
                     try {
                         if (that.scan_job.manufacturer_data && isBoxMatched(that.scan_job.manufacturer_data , mhex) ) {
