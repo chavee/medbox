@@ -16,8 +16,10 @@ npm install
 npm start
 ```
 
-จะสามารถเข้าถึง page ได้จาก url
+จะสามารถเข้าถึงไฟล์ได้จาก root url http://localhost:9000
 
+เช่น
 ```
-http://localhost:9000
+http://localhost:9000/medbox.js
+http://localhost:9000/examples/simple
 ```
