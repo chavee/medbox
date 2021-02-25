@@ -10,7 +10,7 @@ let MedBox = function(param) {
     if (param.debug == undefined || param.debug != false) {
         this.debug = true;
     }
-    this.debug_area = param.debug_area || 'debug_area'; 
+    this.debug_div_id = param.debug_div_id || 'debug_area'; 
 
     this.scan_job = {
         name : '',
@@ -54,7 +54,7 @@ MedBox.prototype.logtoHTML = function(input, header = ''){
       }
     }
 
-    let debugbox = document.getElementById(this.debug_area);
+    let debugbox = document.getElementById(this.debug_div_id);
     if (debugbox) {
       if (header) {
           header = ' '+header+' ';
