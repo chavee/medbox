@@ -1,5 +1,5 @@
 /*
-  MedBoxjs rev 3
+  MedBoxjs rev 4
 */
 
 let MedBox = function(param) {
@@ -179,8 +179,6 @@ MedBox.prototype.callbackHandler = function(e) {
         return false;
     }
 
-    let message = '';
-
     if (!e || !e.detail) {
         return;
     }
@@ -199,7 +197,7 @@ MedBox.prototype.callbackHandler = function(e) {
     try {
         if (type == 'return_once_device') {
                 let d = data.data;
-                mhex = d.manufacturer_data_haxa || d.manufacturer_data_hexa;
+                let mhex = d.manufacturer_data_haxa || d.manufacturer_data_hexa;
                 if (mhex) {
                     try {
                         if (that.scan_job.manufacturer_data && isBoxMatched(that.scan_job.manufacturer_data , mhex) ) {
@@ -263,7 +261,6 @@ MedBox.prototype.callbackHandler = function(e) {
             that.logtoHTML("disconnected");
         }
         else {
-            //if (type != 'return_once_device'  && type != 'start_scan_bluetooth' &&  type != 'stop_scan_bluetooth' ) {
             if (type != 'get_device_service' ) {
                 scandebug = false;
                 that.logtoHTML(data, 'general log');
