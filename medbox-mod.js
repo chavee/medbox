@@ -1,41 +1,16 @@
-/*
-  MedBoxjs rev 3
-*/
+//let scan_job;
+let write_job;
 
-let MedBox = function(param) {
-    this.logEndpoint = param.logEndpoint;
-    this.oneID = param.oneID;
-    this.timeout = param.timeout || 10000;
+// function clearScanJob() {
+//     scan_job = {
+//         name : '',
+//         manufacturer_data : '',
+//         callback : ''
+//     }
+// }
 
-    if (param.debug == undefined || param.debug != false) {
-        this.debug = true;
-    }
-    this.debug_area = param.debug_area || 'debug_area'; 
-
-    this.scan_job = {
-        name : '',
-        manufacturer_data : '',
-        callback : ''
-    };
-
-    this.write_job = {
-        uuid : '',
-        service: '',
-        characteristic : '',
-        callback : ''
-    };
-}
-
-MedBox.prototype.clearScanJob = function() {
-    this.scan_job = {
-        name : '',
-        manufacturer_data : '',
-        callback : ''
-    }
-}
-
-MedBox.prototype.clearWriteJob = function() {
-    this.write_job = {
+function clearWriteJob() {
+    write_job = {
         uuid : '',
         service: '',
         characteristic : '',
@@ -43,7 +18,7 @@ MedBox.prototype.clearWriteJob = function() {
     }
 }
 
-MedBox.prototype.logtoHTML = function(input, header = ''){
+function logtoHTML(input, header = ''){
     let out = input;
     if (typeof(input) == 'object') {
       try {
@@ -54,7 +29,7 @@ MedBox.prototype.logtoHTML = function(input, header = ''){
       }
     }
 
-    let debugbox = document.getElementById(this.debug_area);
+    let debugbox = document.getElementById("debug_area");
     if (debugbox) {
       if (header) {
           header = ' '+header+' ';
@@ -62,6 +37,28 @@ MedBox.prototype.logtoHTML = function(input, header = ''){
       debugbox.innerHTML = out + '<br>---'+ header +'----------<br>' + debugbox.innerHTML;
     }
 }
+
+
+let MedBox = function(param) {
+    this.logEndpoint = param.logEndpoint;
+    this.oneID = param.oneID;
+    this.timeout = param.timeout || 10000;
+
+    this.scan_job = {
+            name : '',
+            manufacturer_data : '',
+            callback : ''
+    };
+
+    this.clearScanJob = () => {
+        this.scan_job = {
+            name : '',
+            manufacturer_data : '',
+            callback : ''
+        }
+    }
+}
+
 
 MedBox.prototype.log = function(data){
     fetch(this.logEndpoint, {
@@ -76,13 +73,14 @@ MedBox.prototype.log = function(data){
     })
     .then(res => {
         console.log('Success:', res.json);
-        //alert(JSON.stringify(data));
+        alert(JSON.stringify(data));
     })
     .catch((error) => {
         console.error('Error:', error);
-        //alert('Error:', error);
+        alert('Error:', error);
     });
 }
+
 
 MedBox.prototype.openBoxByQRCode = function(qrcode, callback){
       let that = this;
@@ -91,7 +89,6 @@ MedBox.prototype.openBoxByQRCode = function(qrcode, callback){
       const TIMEOUT = this.timeout;
 
       function scanDevice(filter={}, callback) {
-
           try {
               if (filter.manufacturer_data) {
                   that.scan_job.manufacturer_data = filter.manufacturer_data;
@@ -115,24 +112,22 @@ MedBox.prototype.openBoxByQRCode = function(qrcode, callback){
       function unlockBLELock(mid, callback) {
           let timer = 0;
           timer = setTimeout(() => {
-              that.clearWriteJob();
+              write_job.callback = '';
               callback(404, 'Box not found');
           }, TIMEOUT);
 
           scanDevice(mid, function(info) {
-
-              that.logtoHTML(info, 'scanDevice found info');
-
+              logtoHTML(info, 'scanDevice found info');
               if (timer) {
                   clearTimeout(timer);
                   timer = 0;
               }
               timer = setTimeout(() => {
-                  that.clearWriteJob();
+                  write_job.callback = '';
                   callback(500, 'Unlock Fail');
               }, TIMEOUT);
 
-              that.logtoHTML(info, 'writing BLE');
+              logtoHTML(info, 'writing BLE');
 
               OneChat_writeCharacteristicByUUID(info.uuid, 'FF00', 'FF01', '0006CC59513C4CAA6116D34BF71000B12EF8', 'hex');
 
@@ -144,7 +139,7 @@ MedBox.prototype.openBoxByQRCode = function(qrcode, callback){
               //     data_type : 'hex'
               // });
 
-              that.write_job.callback = function() {
+              write_job.callback = function() {
                   if (timer) {
                       clearTimeout(timer);
                       timer = 0;
@@ -164,12 +159,12 @@ MedBox.prototype.openBoxByQRCode = function(qrcode, callback){
           else {
               payload = {'name': qrcode };
           }
-          that.logtoHTML('Performing BLE scan for' + JSON.stringify(payload));
+          logtoHTML('Performing BLE scan for' + JSON.stringify(payload));
           unlockBLELock(payload, callback);
       }
 }
 
-MedBox.prototype.callbackHandler = function(e) {
+MedBox.prototype.callbackHandler = async function(e) {
     let that = this;
 
     function swapFirst2ByteOnHex(hexstr) {
@@ -208,6 +203,8 @@ MedBox.prototype.callbackHandler = function(e) {
                 mhex = d.manufacturer_data_haxa || d.manufacturer_data_hexa;
                 if (mhex) {
                     try {
+//alert(mhex)                      
+//alert(that.scan_job.manufacturer_data)
                         if (that.scan_job.manufacturer_data && isBoxMatched(that.scan_job.manufacturer_data , mhex) ) {
                             OneChat_stopScanDevice();
                             if (typeof (that.scan_job.callback) == 'function') {
@@ -248,31 +245,31 @@ MedBox.prototype.callbackHandler = function(e) {
 
         }
         else if (type == 'write_characteristic_by_uuid') {
-            that.logtoHTML(data);
+            logtoHTML(data);
             if (data) {
 
-                    that.logtoHTML(data.device_uuid, 'writing data')
+                    logtoHTML(data.device_uuid, 'writing data')
 
                     if (data.device_uuid) {
                         setTimeout(() => {
                             OneChat_disconnectBluetoothByUUID(data.device_uuid);
-                            that.logtoHTML("disconnecting...");
+                            logtoHTML("disconnecting...");
                           }, 2000);
 
-                        if (typeof(that.write_job.callback) == 'function') {
-                            that.write_job.callback();
+                        if (typeof(write_job.callback) == 'function') {
+                            write_job.callback();
                         }
                     }
             }
         }
         else if (type == 'disconnect_bluetooth_by_uuid') {
-            that.logtoHTML("disconnected");
+            logtoHTML("disconnected");
         }
         else {
             //if (type != 'return_once_device'  && type != 'start_scan_bluetooth' &&  type != 'stop_scan_bluetooth' ) {
             if (type != 'get_device_service' ) {
                 scandebug = false;
-                that.logtoHTML(data, 'general log');
+                logtoHTML(data, 'general log');
             }
         }
     }
@@ -282,6 +279,10 @@ MedBox.prototype.callbackHandler = function(e) {
 
 function MedBoxController(param) {
     let medbox = new MedBox(param);
-    window.addEventListener('oneChatBluetoothCallBackData', medbox.callbackHandler.bind(medbox));
-  	return medbox;
+
+    //medbox.clearScanJob();
+    clearWriteJob();
+
+    window.addEventListener('oneChatBluetoothCallBackData', medbox.callbackHandler);
+    return medbox;
 }

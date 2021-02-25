@@ -1,0 +1,14 @@
+{
+  "name": "medbox-example",
+  "version": "1.0.0",
+  "description": "",
+  "main": "webserver.js",
+  "scripts": {
+    "start": "node webserver.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}

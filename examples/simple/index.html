@@ -1,9 +1,8 @@
 <html>
 <head>
-    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Medecine Box</title>
-    <script src="../../public/js/medbox.js"></script>
+    <script src="../../medbox.js"></script>
     <script src="https://chat-develop.one.th/static/javascript/v1/onechat_bluetooth.js"></script>
 </head>
 <body>
@@ -11,25 +10,31 @@
         <a href="https://chat-api.one.th/go_api/api/v1/openScanQRcodeWithValue" target="_blank">
             <font size=+3>Scan QR to unlock MedBox</font><br>
         </a>
-        MedBoxjs lib rev.1<br><br><br>
+        MedBoxjs lib rev.3 <br><br>
 
         Source code of this page is located on Github :<br>
-        <a href=https://raw.githubusercontent.com/chavee/medbox/main/examples/simple/index.html>https://github.com/chavee/medbox/blob/main/examples/simple/index.html</a>
+        <a href=https://raw.githubusercontent.com/chavee/medbox/main/examples/simple/index.html>https://github.com/chavee/medbox/blob/main/examples/simple/index.html</a>  <br><br>
 
     </center>
-  <script>
+    <script>
         let medbox = MedBoxController({
             oneID : '123456',
-            logEndpoint : "http://your_log_server.com"
-            timeout: 8000
+            logEndpoint : "http://your_log_server.com",
+            timeout: 8000,
+            debug: true,
+            debug_div_id: 'debug_area'
         });
-        function oneChatCallBackQRScanner(qrcode){
+
+        window.addEventListener('oneChatCallBackQRScanner',  async(e) => {
+            let qrcode = e.detail.qrcode;
             medbox.openBoxByQRCode(qrcode.toString(), function (code, text) {
                 alert(`${code} -- ${text}`);
             });
-        }
+        });
+
     </script>
 
-    <div id="devicelist" width=300>
+    <div id="debug_area" width=300 style="font-color:#ff0000">
+
 </body>
 </html>
